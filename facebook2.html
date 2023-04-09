@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Facebook 2 Post</title>
+</head>
+
+<body>
+    <style>
+        span {
+            margin: 5px;
+            padding-left: 7px;
+            padding-right: 7px;
+            border: 1px solid rgb(28, 189, 11);
+        }
+    </style>
+    <select id="users"></select>
+    <div id="box"></div>
+
+    <script>
+        let users = [
+            { id: 1, name: 'Aakash' },
+            { id: 2, name: 'Banti' },
+            { id: 3, name: 'Chetan' },
+            { id: 4, name: 'Denesh' }
+        ]
+        let posts = [
+            { id: 5, text: 'I like This Post ', usersID: 4 },
+            { id: 6, text: 'Godbess You Dear Banti', usersID: 3 },
+            { id: 7, text: 'Where Are You Go Ther ', usersID: 2 },
+            { id: 8, text: 'This is My Home ', usersID: 1 }
+        ]
+        let comments = [
+            { id: 9, messger: 'this is good ', postsID: 8, usersID: 3 },
+            { id: 10, messger: 'hello bro ', postsID: 7, usersID: 1 },
+            { id: 11, messger: 'where are going today', postsID: 6, usersID: 2 },
+            { id: 12, messger: 'what is this  ', postsID: 5, usersID: 4 }
+        ]
+
+        const likes = []
+
+        let nameUser = document.getElementById('users')
+
+        function usersList() {
+            users.map((user) => {
+                let option = document.createElement('option')
+                option.innerHTML = user.name
+                option.value = user.id
+                nameUser.append(option)
+            })
+        }
+        usersList()
+
+        let output = document.getElementById('box')
+
+        function listofPostsByUser() {
+            posts.map((post) => {
+                let userName = document.createElement('h2')
+                userName.innerHTML = userByPost(post.usersID)
+                let postBox = document.createElement('h3')
+                postBox.innerHTML = post.text;
+                let showLike = document.createElement('span')
+                let likeBtn = document.createElement('button')
+                likeBtn.innerHTML = 'Like';
+
+                // showUsers which user like this post 
+                let showUsers = document.createElement('div')
+                showUsers.style.display = 'none'
+
+                likeBtn.addEventListener('click', function () {
+                    let liked = false;
+                    //  let user = findUserName(parseInt(nameUser.value))
+                    for (let i = 0; i < likes.length; i++) {
+                        if (likes[i].postId === post.id && likes[i].userId === parseInt(nameUser.value)) {
+                            likes.splice(i, 1);
+                            liked = true;
+                            break;
+                        }
+                    }
+                    if (!liked) {
+                        likes.push({ postId: post.id, userId: parseInt(nameUser.value) });
+                    }
+                    showLike.innerHTML = likes.filter((like) => like.postId === post.id).length;
+                    showLikeUsersName(showUsers, post.id)
+                    console.log(likes)
+                })
+
+
+                let showLikeUsers = document.createElement('button')
+                showLikeUsers.innerHTML = 'show User';
+                showLikeUsers.addEventListener('click',function(){
+                    if(showUsers.style.display === 'none'){
+                        showUsers.style.display ='block'
+                    }else{
+                        showUsers.style.display ='none'
+                    }
+                })
+
+                let commet = document.createElement('h4')
+                commet.innerHTML = 'Comment';
+
+                let commentBox = document.createElement('div')
+                let commentInput = document.createElement('input')
+                let commentBtn = document.createElement('button')
+                commentBtn.innerHTML = 'Create';
+
+                let commentID = 1;
+                commentBtn.addEventListener('click', function () {
+                    let obj = { id: commentID, messger: commentInput.value }
+                    comments.push(obj)
+                    commentID++;
+                    console.log(comments)
+                    let div = document.createElement('div')
+                    div.innerHTML = commentInput.value + '  by  : -' + nameUser.value
+                    commentBox.append(div)
+                })
+
+                let commentOnPost = document.createElement('div')
+                commentOnPost.innerHTML = commentByPost(post.id) + ' by  : - ' + commentByUser(post.usersID)
+                commentBox.append(commentOnPost)
+
+                let tagHr = document.createElement('hr')
+
+                output.append(userName)
+                output.append(postBox)
+                output.append(likeBtn)
+                output.append(showLike)
+                output.append(showLikeUsers)
+
+                output.append(showUsers)
+
+                output.append(commet)
+                output.append(commentInput)
+                output.append(commentBtn)
+                output.append(commentBox)
+                output.append(tagHr)
+            })
+        }
+        listofPostsByUser()
+
+        function userByPost(id) {
+            let a = users.filter((user) => {
+                return user.id === id
+            })
+            return a[0].name
+        }
+
+        function commentByPost(id) {
+            let b = comments.filter((commet) => {
+                return commet.postsID === id
+            })
+            return b[0].messger
+        }
+
+        function commentByUser(id) {
+            let a = comments.filter(comment => id === comment.usersID)
+            let store = a[0].usersID
+            let b = users.filter(user => store === user.id)
+            return b[0].name
+        }
+
+        function showLikeUsersName(box, postId) {
+            box.innerHTML = ''
+            let filterlike = likes.filter(like => like.postId === postId)
+            filterlike.map((like) => {
+                users.map((user) => {
+                    if (like.userId === user.id) {
+                        let p = document.createElement('p')
+                        p.innerHTML = user.name
+                        box.append(p)
+                    }
+                })
+            })
+        }
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
